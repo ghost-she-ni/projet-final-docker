@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List
 import motor.motor_asyncio
@@ -14,6 +15,15 @@ app = FastAPI()
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
 db = client.task_manager
 tasks_collection = db.tasks
+
+# Ajouter le middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Autoriser toutes les origines (vous pouvez restreindre à une liste spécifique)
+    allow_credentials=True,
+    allow_methods=["*"],  # Autoriser toutes les méthodes HTTP
+    allow_headers=["*"],  # Autoriser tous les en-têtes
+)
 
 # Custom Pydantic Model to handle ObjectId
 class PyObjectId(ObjectId):
@@ -48,10 +58,10 @@ class Task(BaseModel):
 
 @app.post("/tasks/", response_model=Task)
 async def create_task(task: Task):
-    task_dict = task.dict(by_alias=True)
-    result = await tasks_collection.insert_one(task_dict)
-    task_dict["_id"] = str(result.inserted_id)
-    return task_dict
+    task_dict = task.dict(exclude={"_id"})  # Exclut l'_id s'il est vide ou non défini
+    result = await tasks_collection.insert_one(task_dict)  # Insère la tâche dans MongoDB
+    task_dict["_id"] = str(result.inserted_id)  # Récupère et assigne l'ID généré par MongoDB
+    return task_dict  # Retourne la tâche avec l'ID
 
 @app.get("/tasks/", response_model=List[Task])
 async def get_tasks():

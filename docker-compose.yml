@@ -20,5 +20,13 @@ services:
     environment:
       - MONGO_URI=mongodb://database:27017
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend_service
+    ports:
+      - "8080:80"  # Serveur frontend sur le port 8080
+
+
 volumes:
   mongo_data:
