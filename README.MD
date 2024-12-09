@@ -127,7 +127,7 @@ Les tests peuvent être exécutés via l'environnement local ou conteneurisé :
 ---
 
 ## **Crédits**
-- **Développement** : Nicolas SILINOU
+- **Développement** : Nicolas SILINOU, Dimitri MIEYO, Brayane MBA ABESSOLO
 - **Encadrement** : ESIEA
 - **Technologies utilisées** : Docker, FastAPI, MongoDB
 
